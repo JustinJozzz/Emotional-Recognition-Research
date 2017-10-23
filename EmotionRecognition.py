@@ -6,8 +6,9 @@ import numpy as np
 import dlib
 import itertools
 from sklearn.svm import SVC
+from sklearn.externals import joblib
 
-emotions = ["anger", "contempt", "disgust", "fear", "happiness", "neutral", "sadness", "surprise"]
+emotions = ["Anger", "Disgust", "Fear", "Happiness", "Neutral", "Sadness", "Surprise"]
 clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
@@ -92,11 +93,12 @@ for i in range(0,10):
     npar_trainlabs = np.array(training_labels)
     print("training SVM linear %s" %i)
     clf.fit(npar_train, training_labels)
+    clf.predict(np.array([training_data[0]]))
 
     print("getting accuracies %s" %i)
     npar_pred = np.array(prediction_data)
     pred_lin = clf.score(npar_pred, prediction_labels)
     print ("linear: ", pred_lin)
     accur_lin.append(pred_lin)
-
-print("Mean value lin svm: %s" %np.mean(accur_lin))
+    if(i == 9):
+       joblib.dump(clf, 'EmotionSVM.pkl')
